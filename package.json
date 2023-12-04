@@ -1,0 +1,23 @@
+{
+  "name": "e-commerce-mern",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sharif7761/E-commerce-MERN.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sharif7761/E-commerce-MERN/issues"
+  },
+  "homepage": "https://github.com/sharif7761/E-commerce-MERN#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
