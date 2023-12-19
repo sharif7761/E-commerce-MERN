@@ -6,6 +6,7 @@ const xssClean = require('xss-clean')
 const rateLimit = require('express-rate-limit')
 const app = express();
 const userRouter = require('./routes/userRouter')
+const seedRouter = require('./routes/seedRouter')
 
 const rateLimiter = rateLimit({
     windowMs: 1* 60 * 1000, // 1 minute
@@ -20,6 +21,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use('/api/user', userRouter)
+app.use('/api/seed', seedRouter)
 
 // client error handling
 app.use((req, res, next) => {
