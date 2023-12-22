@@ -2,23 +2,22 @@ const User = require("../models/userModel");
 const CreateError = require("http-errors");
 const mongoose = require("mongoose");
 
-const findUserById = async (id) => {
+const findById = async (id, options= {}) => {
     try {
-        const options = {password: 0}
-        const user = await User.findById(id, options)
+        const item = await User.findById(id, options)
 
-        if(!user) {
+        if(!item) {
             throw CreateError(404, 'No user found')
         }
-        return user;
+        return item;
     }
     catch (error) {
         if(error instanceof mongoose.Error){
-            throw (CreateError(404, 'Invalid user id'))
+            throw (CreateError(404, 'Invalid item id'))
             return
         }
         throw error;
     }
 }
 
-module.exports = {findUserById}
+module.exports = {findById}
