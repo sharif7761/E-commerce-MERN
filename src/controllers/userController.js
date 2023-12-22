@@ -60,7 +60,7 @@ const getSingleUser = async (req, res, next) => {
     try{
         const id = req.params.id;
         const options = {password: 0}
-        const user = await findById(id, options)
+        const user = await findById(User, id, options)
 
         return successResponse(res, {
             statusCode: 200,
@@ -82,7 +82,7 @@ const deleteUser = async (req, res, next) => {
     try{
         const id = req.params.id;
         const options = {password: 0}
-        const user = await findById(id, options)
+        const user = await findById(User, id, options)
 
         const userImagePath = user.image;
         fs.access(userImagePath, (err) => {
