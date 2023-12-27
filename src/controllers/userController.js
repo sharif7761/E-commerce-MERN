@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const {findById} = require("../services/findItem");
 const {deleteImage} = require("../helpers/deleteImage");
 const {createJSONWebToken} = require("../helpers/jsonwebtoken");
-const {jwtActivationKey} = require("../secret");
+const {jwtActivationKey, clientURL} = require("../secret");
 
 const getUsers = async (req, res, next) => {
     try{
@@ -118,6 +118,16 @@ const processRegister = async (req, res, next) => {
 
         //create jwt
         const token = createJSONWebToken({name, email, password, phone, address}, jwtActivationKey, '10m')
+
+        // prepare email
+        const emailData = {
+            email,
+            subject: 'Account activation email',
+            html: `
+                <h2>Hello ${name} !</h2>
+                <p>Please <a href="${clientURL}/api/user/activate/${token}">click here</a> to activate your account !</p>
+            `
+        }
 
 
         return successResponse(res, {

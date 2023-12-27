@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/sharif7761/E-commerce-MERN#readme",
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
@@ -28,6 +28,7 @@
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",
+    "nodemailer": "^6.9.7",
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
