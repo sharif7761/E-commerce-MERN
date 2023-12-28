@@ -151,4 +151,47 @@ const processRegister = async (req, res, next) => {
     }
 }
 
-module.exports = {getUsers, getSingleUser, deleteUser, processRegister}
+const activateUserAccount = async (req, res, next) => {
+    try{
+        const {name, email, password, phone, address} = req.body;
+
+        const userExists = await User.exists({email})
+        if(userExists){
+            throw CreateError(409, 'user already exists')
+        }
+
+        //create jwt
+        const token = createJSONWebToken({name, email, password, phone, address}, jwtActivationKey, '10m')
+
+        // prepare email
+        const emailData = {
+            email,
+            subject: 'Account activation email',
+            html: `
+                <h2>Hello ${name} !</h2>
+                <p>Please <a href="${clientURL}/api/user/verify/${token}">click here</a> to activate your account !</p>
+            `
+        }
+        try {
+            await emailWithNodeMailer(emailData)
+        }
+        catch (error){
+            next(CreateError(500, 'Email sending error'))
+            return;
+        }
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: `Please go to your email ${email} to complete your registration`,
+            payload: {token}
+        })
+    }
+    catch (error){
+        if(error instanceof mongoose.Error){
+            next(CreateError(404, 'Invalid user id'))
+        }
+        next(error)
+    }
+}
+
+module.exports = {getUsers, getSingleUser, deleteUser, processRegister, activateUserAccount}
