@@ -15,7 +15,7 @@ const rateLimiter = rateLimit({
     message: 'Too many requests form this IP'
 })
 
-app.use(rateLimiter)
+//app.use(rateLimiter)
 app.use(morgan('dev'))
 app.use(xssClean())
 app.use(bodyParser.json())
