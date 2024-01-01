@@ -7,6 +7,7 @@ const {deleteImage} = require("../helpers/deleteImage");
 const {createJSONWebToken} = require("../helpers/jsonwebtoken");
 const {jwtActivationKey, clientURL} = require("../secret");
 const emailWithNodeMailer = require("../helpers/email");
+const jwt = require('jsonwebtoken')
 
 const getUsers = async (req, res, next) => {
     try{
@@ -153,43 +154,37 @@ const processRegister = async (req, res, next) => {
 
 const activateUserAccount = async (req, res, next) => {
     try{
-        const {name, email, password, phone, address} = req.body;
+        const token = req.body.token
+        if(!token) throw CreateError(404, 'Token not found');
 
-        const userExists = await User.exists({email})
-        if(userExists){
-            throw CreateError(409, 'user already exists')
-        }
-
-        //create jwt
-        const token = createJSONWebToken({name, email, password, phone, address}, jwtActivationKey, '10m')
-
-        // prepare email
-        const emailData = {
-            email,
-            subject: 'Account activation email',
-            html: `
-                <h2>Hello ${name} !</h2>
-                <p>Please <a href="${clientURL}/api/user/verify/${token}">click here</a> to activate your account !</p>
-            `
-        }
         try {
-            await emailWithNodeMailer(emailData)
-        }
-        catch (error){
-            next(CreateError(500, 'Email sending error'))
-            return;
-        }
+            const decoded =  jwt.verify(token, jwtActivationKey)
+            if(!decoded) throw CreateError(404, 'Unable to verify user');
 
-        return successResponse(res, {
-            statusCode: 200,
-            message: `Please go to your email ${email} to complete your registration`,
-            payload: {token}
-        })
+            const userExists = await User.exists({email: decoded.email})
+            if(userExists){
+                throw CreateError(409, 'user already exists')
+            }
+
+            await User.create(decoded)
+
+            return successResponse(res, {
+                statusCode: 201,
+                message: `User created`
+            })
+        } catch (error) {
+            if(error.name === 'TokenExpiredError'){
+                throw CreateError(401, 'Token Expired');
+            }
+            else if(error.name === 'JsonWebTokenError'){
+                throw CreateError(401, 'Invalid Token');
+            }
+            else {
+                throw error;
+            }
+        }
     }
     catch (error){
-        if(error instanceof mongoose.Error){
-            next(CreateError(404, 'Invalid user id'))
-        }
         next(error)
     }
 }
